@@ -1,4 +1,4 @@
-const {By, Builder, Browser} = require('selenium-webdriver');
+const {By,  Builder, Browser} = require('selenium-webdriver');
 require('chromedriver');
 describe('Search products by keywords', () => {
 
@@ -43,20 +43,32 @@ describe('Search products by keywords', () => {
         await driver.quit();
     })
 
-    test('products are sorted correctly.', async () => {
-        driver = await new Builder().forBrowser(Browser.CHROME).build();
+
+    test('less product', async () => {
+        let driver = await new Builder().forBrowser(Browser.CHROME).build();
         await driver.get('https://www.waterstones.com/');
         await driver.manage().setTimeouts({implicit: 5000});
         let rejectButton = await driver.findElement(By.id('onetrust-reject-all-handler'));
         await rejectButton.click();
         let searchBox = await driver.findElement(By.name('term'));
         let submitButton = await driver.findElement(By.className('input-search-button icon'));
-        await searchBox.sendKeys('harry potter');
+        await searchBox.sendKeys('Гharry potter');
         await submitButton.click();
+        const searchCountElement = await driver.findElement(By.className('search-result-tab-all')).getText();
+        const searchCountNumBefore = parseInt(searchCountElement);
+        let hardbackFilter = await driver.findElement(By.css('a.filter-link[href*="format/16"]'));
+        await hardbackFilter.click();
+        const searchCountFiltered = await driver.findElement(By.className('search-result-tab-all')).getText();
+        const searchCountFilteredNum = parseInt(searchCountFiltered);
+        expect(searchCountNumBefore).toBeGreaterThan(searchCountFilteredNum);
+    
         await driver.quit();
-    })
-
-
+    });
+    
+    
+    
+    
+    
 
 
 })
